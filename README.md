@@ -1,5 +1,9 @@
 # phoenix-runtime
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19360782.svg)](https://doi.org/10.5281/zenodo.19360782)
+[![npm](https://img.shields.io/npm/v/@semanticintent/phoenix-runtime)](https://www.npmjs.com/package/@semanticintent/phoenix-runtime)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Phoenix Pipeline Runtime** — orchestrate the 7-agent legacy modernization pipeline.
 
 Manages `.sil` artifact state, enforces human gates, injects episode context, and produces agent prompts ready to run in Claude Code or any AI interface.
@@ -39,13 +43,13 @@ All pipeline artifacts are written in `.sil` format (EMBER — Semantic Intent L
 
 ## Build Status
 
-**Phase 1 in progress** — Core modules (parser, state, agents, episodes).
+67 tests · 100% statements · 100% functions · 91% branch coverage
 
 ```
-Phase 1 — Core          src/parser/sil.ts, src/pipeline/state.ts, agents.ts, episodes/manager.ts
-Phase 2 — Orchestrator  src/pipeline/orchestrator.ts, src/prompts/loader.ts
-Phase 3 — CLI           src/cli/commands/*.ts, bin/phoenix.js
-Phase 4 — Tests         tests/ — full coverage before npm publish
+Phase 1 — Core          ✓  parser, state, agents, episodes
+Phase 2 — Orchestrator  ✓  prompt assembly, artifact validation
+Phase 3 — CLI           ✓  init, run, status, gate, episode, validate
+Phase 4 — Coverage      ✓  all thresholds met, published to npm
 ```
 
 ## Relationship to cal-runtime
