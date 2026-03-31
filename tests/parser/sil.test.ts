@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { join } from 'node:path'
-import { parseSil, readSil, getConfidence } from '../../src/parser/sil.js'
+import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { parseSil, readSil, readMissionBrief, getConfidence } from '../../src/parser/sil.js'
 
 const FIXTURES = join(import.meta.dirname, '../fixtures')
 
@@ -78,5 +80,74 @@ describe('parseSil — episode construct', () => {
     const result = readSil(join(FIXTURES, 'ep-042.sil'))
     expect(result.raw).toContain('CONSTRUCT  episode')
     expect(result.raw).toContain('ep-042')
+  })
+})
+
+describe('parseSil — edge cases', () => {
+  it('handles an empty multi-line field (key: with no indented lines)', () => {
+    const raw = [
+      'CONSTRUCT  spec',
+      'ID         test.empty',
+      'VERSION    1',
+      '─────────────────────────────────────────',
+      'intent:',
+      'rules:',
+      '  - one rule',
+    ].join('\n')
+    const result = parseSil(raw)
+    expect(result.fields['intent']).toBe('')
+    expect(result.fields['rules']).toEqual(['one rule'])
+  })
+
+  it('ignores non-field top-level lines (e.g. SCREEN blocks)', () => {
+    const raw = [
+      'CONSTRUCT  screen',
+      'ID         cart.checkout',
+      'VERSION    1',
+      '─────────────────────────────────────────',
+      'SCREEN 1 — Cart',
+      '┌─────────────────────────────────────┐',
+      '│  Your Cart                          │',
+      '└─────────────────────────────────────┘',
+      'on: "Checkout →" → SCREEN 2',
+    ].join('\n')
+    // Should not throw — non-field lines absorbed into raw
+    const result = parseSil(raw)
+    expect(result.construct).toBe('screen')
+    expect(result.id).toBe('cart.checkout')
+  })
+
+  it('reads confidence values: medium and low', () => {
+    const medium = parseSil(
+      'CONSTRUCT  signal\nID  x\nVERSION  1\n─────────────────────────────────────────\nconfidence: medium\n'
+    )
+    expect(getConfidence(medium)).toBe('medium')
+
+    const low = parseSil(
+      'CONSTRUCT  signal\nID  x\nVERSION  1\n─────────────────────────────────────────\nconfidence: low\n'
+    )
+    expect(getConfidence(low)).toBe('low')
+  })
+})
+
+describe('readMissionBrief', () => {
+  it('reads _mission.sil from project root', () => {
+    const dir = join(tmpdir(), `phoenix-mission-test-${Date.now()}`)
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(
+      join(dir, '_mission.sil'),
+      [
+        'CONSTRUCT  signal',
+        'ID         _mission',
+        'VERSION    1',
+        '─────────────────────────────────────────',
+        'project:   acme-oms',
+        'system:    order management system',
+      ].join('\n')
+    )
+    const result = readMissionBrief(dir)
+    expect(result.id).toBe('_mission')
+    expect(result.fields['project']).toBe('acme-oms')
+    rmSync(dir, { recursive: true })
   })
 })

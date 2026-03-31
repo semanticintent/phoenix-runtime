@@ -116,3 +116,22 @@ describe('writeEpisode / resolveEpisode', () => {
     expect(episodes.find((e) => e.id === 'ep-042')).toBeUndefined()
   })
 })
+
+// ─────────────────────────────────────────
+// Branch coverage — parseAffects and parseSkip with string input
+// ─────────────────────────────────────────
+
+describe('episode parsing — string branch coverage', () => {
+  it('writeEpisode round-trips affects and skip correctly', () => {
+    const ep = mockEpisode()
+    writeEpisode(testDir, ep)
+
+    // Read back and verify affects and skip parsed correctly
+    const episodes = readOpenEpisodes(testDir)
+    const found = episodes.find((e) => e.id === 'ep-099')
+    expect(found).toBeDefined()
+    expect(found?.affects['a-03']).toBe('add export.bulk spec')
+    expect(found?.skip).toContain('a-00')
+    expect(found?.skip).toContain('a-01')
+  })
+})

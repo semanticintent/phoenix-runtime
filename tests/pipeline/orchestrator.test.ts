@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { mkdirSync, rmSync, writeFileSync, cpSync } from 'node:fs'
+import { mkdirSync, rmSync, writeFileSync, cpSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { prepareRun, pipelineSummary, validateArtifacts } from '../../src/pipeline/orchestrator.js'
-import { initState, writeState, markAgentComplete, approveGate } from '../../src/pipeline/state.js'
+import { initState, writeState, markAgentComplete, approveGate, returnGate } from '../../src/pipeline/state.js'
 import { AGENTS } from '../../src/pipeline/agents.js'
 import type { AgentRun } from '../../src/pipeline/state.js'
 
@@ -154,12 +154,43 @@ describe('pipelineSummary', () => {
     expect(summary).toContain('phoenix run a-00')
   })
 
-  it('shows gate status', () => {
+  it('shows approved gate with ✓', () => {
     let state = initState(testDir, 'test-project')
     state = approveGate('a-04-approved', 'looks good', state)
     const summary = pipelineSummary(state, testDir)
     expect(summary).toContain('a-04-approved')
     expect(summary).toContain('approved')
+    expect(summary).toContain('✓')
+  })
+
+  it('shows returned gate with ✗', () => {
+    let state = initState(testDir, 'test-project')
+    state = returnGate('pass-1', 'missing error state on payment screen', state)
+    const summary = pipelineSummary(state, testDir)
+    expect(summary).toContain('pass-1')
+    expect(summary).toContain('returned')
+    expect(summary).toContain('✗')
+  })
+
+  it('shows no next action hint when all agents complete', () => {
+    let state = initState(testDir, 'test-project')
+    const allIds = ['a-00', 'a-01', 'a-02', 'a-03', 'a-04', 'a-05', 'a-06']
+    for (const id of allIds) state = markAgentComplete(id, mockRun(id), state)
+    for (const gate of ['a-04-approved', 'pass-1', 'pass-2', 'pass-3', 'pass-4', 'pass-5', 'pass-6']) {
+      state = approveGate(gate, '', state)
+    }
+    const summary = pipelineSummary(state, testDir)
+    // No "Next:" line when everything is done
+    expect(summary).not.toContain('Next: phoenix run')
+  })
+
+  it('counts zero artifacts when directory does not exist', () => {
+    // validateArtifacts internally calls countArtifacts which handles missing dirs
+    const fresh = join(tmpdir(), `phoenix-fresh-${Date.now()}`)
+    mkdirSync(fresh, { recursive: true })
+    const result = validateArtifacts('a-00', fresh)
+    expect(result.found['signal']).toBe(0)
+    rmSync(fresh, { recursive: true })
   })
 })
 

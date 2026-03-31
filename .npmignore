@@ -1,0 +1,14 @@
+# Source and tests — not needed in published package
+src/
+tests/
+coverage/
+*.tsbuildinfo
+
+# Config files
+vitest.config.ts
+tsconfig.json
+.eslintrc*
+
+# Dev artifacts
+.DS_Store
+*.log
