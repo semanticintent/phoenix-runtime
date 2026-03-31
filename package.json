@@ -1,0 +1,39 @@
+{
+  "name": "@semanticintent/phoenix-runtime",
+  "version": "0.1.0",
+  "description": "Phoenix Pipeline Runtime — orchestrate the 7-agent legacy modernization pipeline. Manages .sil artifact state, enforces human gates, injects episode context.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "phoenix": "./bin/phoenix.js"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "build": "tsc",
+    "dev": "vitest watch",
+    "validate": "npm run typecheck && npm run test"
+  },
+  "keywords": [
+    "phoenix",
+    "legacy-modernization",
+    "ember",
+    "sil",
+    "semantic-intent",
+    "agent-pipeline",
+    "business-logic-extraction"
+  ],
+  "author": "Michael Shatny",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
