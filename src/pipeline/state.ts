@@ -1,6 +1,6 @@
-// Phase 1 — Pipeline State
-// State lives in .phoenix/state.json at the project root.
-// Human readable. Git diffable. No external store needed.
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { AGENTS } from './agents.js'
 
 export interface AgentRun {
   agentId: string
@@ -28,19 +28,63 @@ export interface PipelineState {
   openEpisodes: string[]
 }
 
+const STATE_DIR = '.phoenix'
+const STATE_FILE = 'state.json'
+
+function statePath(projectPath: string): string {
+  return join(projectPath, STATE_DIR, STATE_FILE)
+}
+
+export function initState(projectPath: string, projectName: string): PipelineState {
+  return {
+    project: projectName,
+    path: projectPath,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    agents: {},
+    gates: {},
+    openEpisodes: [],
+  }
+}
+
 export function readState(projectPath: string): PipelineState {
-  throw new Error('Not implemented')
+  const path = statePath(projectPath)
+  if (!existsSync(path)) {
+    throw new Error(`No .phoenix/state.json found at ${projectPath}. Run: phoenix init`)
+  }
+  return JSON.parse(readFileSync(path, 'utf-8')) as PipelineState
 }
 
 export function writeState(projectPath: string, state: PipelineState): void {
-  throw new Error('Not implemented')
+  const dir = join(projectPath, STATE_DIR)
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+  const updated = { ...state, updatedAt: new Date().toISOString() }
+  writeFileSync(statePath(projectPath), JSON.stringify(updated, null, 2), 'utf-8')
 }
 
 export function canRun(
   agentId: string,
   state: PipelineState
 ): { can: boolean; reason?: string } {
-  throw new Error('Not implemented')
+  const agent = AGENTS.find((a) => a.id === agentId)
+  if (!agent) return { can: false, reason: `Unknown agent: ${agentId}` }
+
+  // All prerequisite agents must have completed
+  for (const reqAgent of agent.requires.agents) {
+    if (!state.agents[reqAgent]) {
+      return { can: false, reason: `${reqAgent} has not completed` }
+    }
+  }
+
+  // All prerequisite gates must be approved
+  for (const reqGate of agent.requires.gates) {
+    const gate = state.gates[reqGate]
+    if (!gate || gate.status !== 'approved') {
+      return { can: false, reason: `Gate "${reqGate}" is not approved` }
+    }
+  }
+
+  return { can: true }
 }
 
 export function markAgentComplete(
@@ -48,7 +92,10 @@ export function markAgentComplete(
   run: AgentRun,
   state: PipelineState
 ): PipelineState {
-  throw new Error('Not implemented')
+  return {
+    ...state,
+    agents: { ...state.agents, [agentId]: run },
+  }
 }
 
 export function approveGate(
@@ -56,7 +103,16 @@ export function approveGate(
   notes: string,
   state: PipelineState
 ): PipelineState {
-  throw new Error('Not implemented')
+  const record: GateRecord = {
+    gateId,
+    status: 'approved',
+    reviewedAt: new Date().toISOString(),
+    notes,
+  }
+  return {
+    ...state,
+    gates: { ...state.gates, [gateId]: record },
+  }
 }
 
 export function returnGate(
@@ -64,5 +120,14 @@ export function returnGate(
   notes: string,
   state: PipelineState
 ): PipelineState {
-  throw new Error('Not implemented')
+  const record: GateRecord = {
+    gateId,
+    status: 'returned',
+    reviewedAt: new Date().toISOString(),
+    notes,
+  }
+  return {
+    ...state,
+    gates: { ...state.gates, [gateId]: record },
+  }
 }
