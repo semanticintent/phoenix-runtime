@@ -1,0 +1,74 @@
+cff-version: 1.2.0
+message: "If you use the Phoenix Runtime in your work, please cite it using this metadata."
+type: software
+
+title: "Phoenix Runtime: Orchestration Layer for the Seven-Agent Legacy Modernization Pipeline"
+version: 0.1.0
+date-released: 2026-03-31
+
+authors:
+  - family-names: Shatny
+    given-names: Michael
+    orcid: "https://orcid.org/0009-0006-2011-3258"
+
+abstract: >
+  Phoenix Runtime is the CLI orchestration layer for Project Phoenix —
+  a seven-agent agentic pipeline for legacy system modernization.
+  The runtime manages .sil artifact state across the pipeline, enforces
+  human gates between build passes, injects open episode context into
+  every agent run, and exposes a CLI that makes running the Phoenix
+  methodology on a real engagement as simple as a single command.
+  Model-agnostic — produces contextualized agent prompts rather than
+  calling AI APIs directly. Built on EMBER Semantic Intent Language (.sil).
+  npm: @semanticintent/phoenix-runtime. bin: phoenix.
+
+keywords:
+  - legacy-modernization
+  - agent-pipeline
+  - business-logic-extraction
+  - ember
+  - sil
+  - semantic-intent
+  - methodology-as-infrastructure
+  - phoenix
+  - agentic-pipeline
+  - typescript
+  - cli
+  - npm
+
+license: MIT
+
+repository-code: "https://github.com/semanticintent/phoenix-runtime"
+
+references:
+  - type: software
+    title: "Project Phoenix: The Agentic Greenfield Pipeline for Legacy Modernization"
+    authors:
+      - family-names: Shatny
+        given-names: Michael
+        orcid: "https://orcid.org/0009-0006-2011-3258"
+    doi: "10.5281/zenodo.18904231"
+
+  - type: article
+    title: "Methodology-as-Infrastructure: From Framework to Runtime"
+    authors:
+      - family-names: Shatny
+        given-names: Michael
+        orcid: "https://orcid.org/0009-0006-2011-3258"
+    doi: "10.5281/zenodo.18946631"
+
+  - type: software
+    title: "CAL Runtime: Cormorant Agentic Language Execution Engine"
+    authors:
+      - family-names: Shatny
+        given-names: Michael
+        orcid: "https://orcid.org/0009-0006-2011-3258"
+    doi: "10.5281/zenodo.18905193"
+
+  - type: software
+    title: "CAL Language Specification: Cormorant Agentic Language Documentation"
+    authors:
+      - family-names: Shatny
+        given-names: Michael
+        orcid: "https://orcid.org/0009-0006-2011-3258"
+    doi: "10.5281/zenodo.18905197"
