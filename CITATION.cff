@@ -5,6 +5,7 @@ type: software
 title: "Phoenix Runtime: Orchestration Layer for the Seven-Agent Legacy Modernization Pipeline"
 version: 0.1.0
 date-released: 2026-03-31
+doi: "10.5281/zenodo.19360782"
 
 authors:
   - family-names: Shatny
@@ -47,7 +48,7 @@ references:
       - family-names: Shatny
         given-names: Michael
         orcid: "https://orcid.org/0009-0006-2011-3258"
-    doi: "10.5281/zenodo.18904231"
+    doi: "10.5281/zenodo.19360727"
 
   - type: article
     title: "Methodology-as-Infrastructure: From Framework to Runtime"
