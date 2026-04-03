@@ -1,6 +1,6 @@
 {
   "name": "@semanticintent/phoenix-runtime",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Phoenix Pipeline Runtime — orchestrate the 7-agent legacy modernization pipeline. Manages .sil artifact state, enforces human gates, injects episode context.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
