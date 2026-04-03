@@ -79,7 +79,7 @@ export function pipelineSummary(state: PipelineState, projectPath: string): stri
 
     if (run) {
       statusLabel = STATUS_ICON.complete
-      confidenceLabel = run.confidence.padEnd(6)
+      confidenceLabel = (run.confidence ?? 'unknown').padEnd(6)
       const count = run.outputCount
       const produces = agent.produces[0]
       detail = `${count} ${produces}${count !== 1 ? 's' : ''}`

@@ -38,6 +38,9 @@ export const validateCommand = new Command('validate')
       process.exit(1)
     } else {
       display.success('All expected artifacts present.')
+      display.blank()
+      display.info(`  If this agent ran out-of-band (e.g. in Claude Code), mark it complete:`)
+      display.info(`  phoenix complete ${agentId} --confidence high --outputs <n> --summary "<what it produced>"`)
     }
 
     display.blank()
