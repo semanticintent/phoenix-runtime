@@ -41,6 +41,45 @@ Human sign-off required between every pass in A-05, and before A-05 can begin.
 
 All pipeline artifacts are written in `.sil` format (EMBER — Semantic Intent Language). Plain text. Human readable without a manual. Git diffable. See the [EMBER spec](https://github.com/semanticintent/project-phoenix) for construct definitions.
 
+## State File Format
+
+`.phoenix/state.json` is the pipeline's source of truth. If an agent runs out-of-band (e.g. in Claude Code), use `phoenix complete` to record it rather than editing the file manually.
+
+```jsonc
+{
+  "project": "my-project",
+  "path": "/path/to/project",
+  "createdAt": "2026-04-03T00:00:00.000Z",
+  "updatedAt": "2026-04-03T00:00:00.000Z",
+  "agents": {
+    "a-04": {
+      "agentId": "a-04",
+      "completedAt": "2026-04-03T12:00:00.000Z",
+      "outputCount": 3,
+      "confidence": "high",       // "high" | "medium" | "low"
+      "summary": "14 signals produced, frequencyFactor bug located"
+    }
+  },
+  "gates": {
+    "a-04-approved": {
+      "gateId": "a-04-approved",
+      "status": "approved",       // "pending" | "approved" | "returned"
+      "reviewedAt": "2026-04-03T12:30:00.000Z",
+      "notes": "stack recommendation accepted"
+    }
+  },
+  "openEpisodes": ["stack-pivot"]
+}
+```
+
+All fields are required. The CLI commands that write state (`phoenix complete`, `phoenix gate`) always produce valid records.
+
+```
+phoenix complete a-04 --confidence high --outputs 3 --summary "signals produced"
+phoenix validate a-04   # checks artifacts + prints the complete command if clean
+phoenix status          # full pipeline view
+```
+
 ## Build Status
 
 67 tests · 100% statements · 100% functions · 91% branch coverage
