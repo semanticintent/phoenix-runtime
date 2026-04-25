@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0] — 2026-04-25
+
+### Changed
+- SIL parser extracted into `@semanticintent/ember` — phoenix-runtime now depends on it as a peer in the methodology-as-infrastructure family
+- `src/parser/sil.ts` replaced with a thin shim; all existing imports unchanged (backward compatible)
+
+### Added
+- `SilConstruct` re-exported as type alias for `EmberConstruct` for backward compatibility
+
+---
+
 ## [1.0.1] — 2026-04-25
 
 ### Added
