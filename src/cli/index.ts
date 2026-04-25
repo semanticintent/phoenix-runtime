@@ -6,13 +6,14 @@ import { gateCommand } from './commands/gate.js'
 import { episodeCommand } from './commands/episode.js'
 import { validateCommand } from './commands/validate.js'
 import { completeCommand } from './commands/complete.js'
+import { exportCommand } from './commands/export.js'
 
 const program = new Command()
 
 program
   .name('phoenix')
   .description('Phoenix Pipeline Runtime — orchestrate the 7-agent legacy modernization pipeline')
-  .version('0.1.0')
+  .version('1.0.0')
 
 program.addCommand(initCommand)
 program.addCommand(runCommand)
@@ -21,5 +22,6 @@ program.addCommand(gateCommand)
 program.addCommand(episodeCommand)
 program.addCommand(validateCommand)
 program.addCommand(completeCommand)
+program.addCommand(exportCommand)
 
 program.parse()

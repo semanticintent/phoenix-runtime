@@ -184,3 +184,92 @@ describe('phoenix episode resolve', () => {
     expect(result.stdout).toContain('ep-042')
   })
 })
+
+// ─────────────────────────────────────────
+// phoenix status --json
+// ─────────────────────────────────────────
+
+describe('phoenix status --json', () => {
+  it('returns valid JSON after init', () => {
+    run(`init test-project --project ${testDir}`)
+    const result = run(`status --json --project ${testDir}`)
+    expect(result.code).toBe(0)
+    const json = JSON.parse(result.stdout)
+    expect(json.project).toBe('test-project')
+    expect(json.nextAgent).toBe('a-00')
+    expect(Array.isArray(json.agents)).toBe(true)
+    expect(json.agents).toHaveLength(7)
+    expect(json.agents[0]).toMatchObject({ id: 'a-00', status: 'ready' })
+    expect(json.openEpisodes).toBe(0)
+  })
+
+  it('reflects completed agents', () => {
+    run(`init test-project --project ${testDir}`)
+    run(`complete a-00 --confidence high --outputs 14 --summary "signals done" --project ${testDir}`)
+    const result = run(`status --json --project ${testDir}`)
+    expect(result.code).toBe(0)
+    const json = JSON.parse(result.stdout)
+    const a00 = json.agents.find((a: { id: string }) => a.id === 'a-00')
+    expect(a00.status).toBe('complete')
+    expect(a00.confidence).toBe('high')
+    expect(json.nextAgent).toBe('a-01')
+  })
+})
+
+// ─────────────────────────────────────────
+// phoenix export
+// ─────────────────────────────────────────
+
+describe('phoenix export', () => {
+  it('outputs a markdown summary after init', () => {
+    run(`init test-project --project ${testDir}`)
+    const result = run(`export --project ${testDir}`)
+    expect(result.code).toBe(0)
+    expect(result.stdout).toContain('# Phoenix Engagement: test-project')
+    expect(result.stdout).toContain('## Pipeline')
+    expect(result.stdout).toContain('A-00')
+    expect(result.stdout).toContain('A-06')
+  })
+
+  it('writes to file with --output', () => {
+    run(`init test-project --project ${testDir}`)
+    const outFile = join(testDir, 'summary.md')
+    const result = run(`export --output ${outFile} --project ${testDir}`)
+    expect(result.code).toBe(0)
+    expect(result.stdout).toContain('summary.md')
+    const { readFileSync, existsSync } = require('node:fs')
+    expect(existsSync(outFile)).toBe(true)
+    expect(readFileSync(outFile, 'utf-8')).toContain('# Phoenix Engagement')
+  })
+
+  it('includes episode data when present', () => {
+    run(`init test-project --project ${testDir}`)
+    cpSync(join(FIXTURES, 'ep-042.sil'), join(testDir, 'episodes', 'ep-042.sil'))
+    const result = run(`export --project ${testDir}`)
+    expect(result.code).toBe(0)
+    expect(result.stdout).toContain('## Episodes')
+    expect(result.stdout).toContain('ep-042')
+  })
+
+  it('fails gracefully when not initialized', () => {
+    const result = run(`export --project ${testDir}`)
+    expect(result.code).toBe(1)
+  })
+})
+
+// ─────────────────────────────────────────
+// phoenix run --clipboard
+// ─────────────────────────────────────────
+
+describe('phoenix run --clipboard', () => {
+  it('copies prompt to clipboard or falls back gracefully', () => {
+    run(`init test-project --project ${testDir}`)
+    const result = run(`run a-00 --clipboard --project ${testDir}`)
+    expect(result.code).toBe(0)
+    // Either copied successfully or fell back — both are acceptable
+    const output = result.stdout
+    expect(
+      output.includes('copied to clipboard') || output.includes('PROJECT CONTEXT')
+    ).toBe(true)
+  })
+})
