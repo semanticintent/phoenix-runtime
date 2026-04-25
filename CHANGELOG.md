@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.1] — 2026-04-25
+
+### Added
+- `phoenix run --clipboard` — copies prompt to clipboard (pbcopy/xclip/clip); falls back to stdout if unavailable (closes #5)
+- `phoenix status --json` — machine-readable pipeline state for scripting and CI (closes #6)
+- `phoenix export` — generates a markdown engagement summary from state, episodes, artifact counts, and certification (closes #7)
+
+74 tests passing.
+
+---
+
 ## [1.0.0] — 2026-04-24
 
 First stable release. All four phases complete, 67 tests, 100% statement coverage. First real-world engagement (wealth2track) completed end-to-end and documented.
