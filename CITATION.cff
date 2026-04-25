@@ -3,9 +3,9 @@ message: "If you use the Phoenix Runtime in your work, please cite it using this
 type: software
 
 title: "Phoenix Runtime: Orchestration Layer for the Seven-Agent Legacy Modernization Pipeline"
-version: 1.0.0
-date-released: 2026-04-24
-doi: "10.5281/zenodo.19360782"
+version: 1.1.0
+date-released: 2026-04-25
+doi: "10.5281/zenodo.19751308"
 
 authors:
   - family-names: Shatny
