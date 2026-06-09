@@ -1,0 +1,7 @@
+CONSTRUCT  signal
+ID         wrong.construct.type
+VERSION    1
+─────────────────────────────────────────
+type:      workflow
+entry:     GET /api/users
+confidence: high

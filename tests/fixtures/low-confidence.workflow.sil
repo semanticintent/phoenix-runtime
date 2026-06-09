@@ -1,0 +1,9 @@
+CONSTRUCT  workflow
+ID         low.confidence.workflow
+VERSION    1
+─────────────────────────────────────────
+intent:    A workflow extracted with low confidence
+entry:     unknown
+steps:
+  - logic unclear — inferred from logs only
+confidence: low

@@ -129,16 +129,15 @@ describe('phoenix validate', () => {
     expect(output).toContain('missing')
   })
 
-  it('passes when artifacts exist', () => {
+  it('passes when valid artifacts exist', () => {
     run(`init test-project --project ${testDir}`)
-    // Drop a workflow .sil file
     cpSync(
-      join(FIXTURES, 'cart.checkout.signal.sil'),
+      join(FIXTURES, 'valid.workflow.sil'),
       join(testDir, 'workflows', 'cart.checkout.sil')
     )
     const result = run(`validate a-01 --project ${testDir}`)
     expect(result.code).toBe(0)
-    expect(result.stdout).toContain('All expected artifacts present')
+    expect(result.stdout).toContain('All expected artifacts present and valid')
   })
 
   it('fails for unknown agent', () => {
@@ -146,6 +145,36 @@ describe('phoenix validate', () => {
     const result = run(`validate a-99 --project ${testDir}`)
     expect(result.code).toBe(1)
     expect(result.stderr + result.stdout).toContain('Unknown agent')
+  })
+})
+
+// ─────────────────────────────────────────
+// phoenix validate — content validation
+// ─────────────────────────────────────────
+
+describe('phoenix validate — content validation', () => {
+  it('reports parse error for malformed .sil file', () => {
+    run(`init test-project --project ${testDir}`)
+    cpSync(join(FIXTURES, 'malformed.workflow.sil'), join(testDir, 'workflows', 'malformed.sil'))
+    const result = run(`validate a-01 --project ${testDir}`)
+    expect(result.code).toBe(1)
+    expect(result.stdout + result.stderr).toMatch(/parse error/i)
+  })
+
+  it('reports construct type mismatch', () => {
+    run(`init test-project --project ${testDir}`)
+    cpSync(join(FIXTURES, 'wrong-type.workflow.sil'), join(testDir, 'workflows', 'wrong.sil'))
+    const result = run(`validate a-01 --project ${testDir}`)
+    expect(result.code).toBe(1)
+    expect(result.stdout + result.stderr).toMatch(/type mismatch/i)
+  })
+
+  it('warns on low confidence but exits 0', () => {
+    run(`init test-project --project ${testDir}`)
+    cpSync(join(FIXTURES, 'low-confidence.workflow.sil'), join(testDir, 'workflows', 'low.sil'))
+    const result = run(`validate a-01 --project ${testDir}`)
+    expect(result.code).toBe(0)
+    expect(result.stdout).toMatch(/confidence: low/i)
   })
 })
 

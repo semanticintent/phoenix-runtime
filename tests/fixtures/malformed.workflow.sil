@@ -1,0 +1,6 @@
+CONSTRUCT  workflow
+ID         broken.workflow
+VERSION    1
+intent: This file is missing the separator line entirely
+steps:
+  - no separator above means the parser will throw

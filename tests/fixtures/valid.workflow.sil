@@ -1,0 +1,13 @@
+CONSTRUCT  workflow
+ID         cart.checkout
+VERSION    1
+─────────────────────────────────────────
+intent:    Process cart checkout and create confirmed order
+entry:     POST /cart/submit
+steps:
+  - validate cart items
+  - apply promo code if present
+  - process payment via Stripe
+  - create order record
+  - send confirmation via SendGrid
+confidence: high

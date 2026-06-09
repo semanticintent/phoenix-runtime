@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0] — 2026-06-09
+
+### Added
+- `phoenix validate` now performs **content validation** on every `.sil` file — not just existence checks (closes #4)
+  - Parse errors: malformed files that fail the EMBER parser are reported with the error message
+  - Type mismatches: files whose `CONSTRUCT` type doesn't match the expected construct for that agent are flagged
+  - Low confidence: files with `confidence: low` produce warnings (exit 0) to prompt review before proceeding
+  - `ArtifactValidation` result now includes `fileResults: FileValidation[]` and `parseErrors: string[]`
+- CLI version now read dynamically from `package.json` — `phoenix --version` will always be correct
+- VS Code extension (`semanticintent.phoenix-sil`) referenced in README
+
+80 tests passing.
+
+---
+
 ## [1.1.0] — 2026-04-25
 
 ### Changed

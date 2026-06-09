@@ -201,17 +201,44 @@ describe('validateArtifacts', () => {
     expect(result.missing).toContain('workflow')
   })
 
-  it('reports zero missing when files exist', () => {
+  it('reports zero missing when valid files exist', () => {
     cpSync(
-      join(FIXTURES, 'cart.checkout.signal.sil'),
+      join(FIXTURES, 'valid.workflow.sil'),
       join(testDir, 'workflows', 'cart.checkout.sil')
     )
     const result = validateArtifacts('a-01', testDir)
     expect(result.found['workflow']).toBe(1)
     expect(result.missing).not.toContain('workflow')
+    expect(result.parseErrors).toHaveLength(0)
+    expect(result.fileResults[0].ok).toBe(true)
   })
 
   it('throws for unknown agent', () => {
     expect(() => validateArtifacts('a-99', testDir)).toThrow('Unknown agent')
+  })
+})
+
+describe('validateArtifacts — content validation', () => {
+  it('detects parse errors in malformed .sil files', () => {
+    cpSync(join(FIXTURES, 'malformed.workflow.sil'), join(testDir, 'workflows', 'malformed.sil'))
+    const result = validateArtifacts('a-01', testDir)
+    expect(result.parseErrors).toContain('malformed.sil')
+    expect(result.fileResults.find((f) => f.file === 'malformed.sil')?.ok).toBe(false)
+  })
+
+  it('detects construct type mismatch', () => {
+    cpSync(join(FIXTURES, 'wrong-type.workflow.sil'), join(testDir, 'workflows', 'wrong.sil'))
+    const result = validateArtifacts('a-01', testDir)
+    const f = result.fileResults.find((r) => r.file === 'wrong.sil')
+    expect(f?.ok).toBe(false)
+    expect(f?.constructMismatch).toEqual({ expected: 'workflow', found: 'signal' })
+  })
+
+  it('flags low confidence files', () => {
+    cpSync(join(FIXTURES, 'low-confidence.workflow.sil'), join(testDir, 'workflows', 'low.sil'))
+    const result = validateArtifacts('a-01', testDir)
+    expect(result.lowConfidence).toContain('low.sil')
+    expect(result.fileResults.find((f) => f.file === 'low.sil')?.confidence).toBe('low')
+    expect(result.parseErrors).toHaveLength(0)
   })
 })
